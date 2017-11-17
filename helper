@@ -1,0 +1,1102 @@
+<?php
+
+if (!function_exists('get_raw_password')) {
+
+    /* returns 6 character random password
+      include 2 alpha,1 uppercase ,2 num, 1 special char
+     * 
+
+
+     */
+    function get_raw_password() {
+        $alpha = "abcdefghijklmnopqrstuvwxyz";
+        $password = substr(str_shuffle($alpha), 0, 2);
+        $upercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $password .= substr(str_shuffle($upercase), 0, 1);
+        $num = "0123456789";
+        $password .= substr(str_shuffle($num), 0, 2);
+        $special_char = "!@#$%^&*_-";
+        $password .= substr(str_shuffle($special_char), 0, 1);
+        return str_shuffle($password);
+    }
+
+}
+
+
+if (!function_exists('get_current_time')) {
+
+    /* return utc timestamp in seconds */
+
+    function get_current_time($timezone = "UTC") {
+
+        date_default_timezone_set($timezone);
+        return time();
+    }
+
+}
+
+
+
+
+
+
+/* For truncate string and add the ellipses to string */
+if (!function_exists('truncate')) {
+
+    function truncate($string, $del, $dot = false) {
+        $len = strlen($string);
+        if ($len > $del) {
+            $new = substr($string, 0, $del);
+            if ($dot == true) {
+                $new .= "...";
+            }
+            return $new;
+        } else {
+            return $string;
+        }
+    }
+
+}
+
+/* * ***************** Hour to second ******** ************ */
+if (!function_exists('hr_to_sec')) {
+
+    function hr_to_sec($hr_time) {
+        if ($hr_time == '') {
+            return false;
+        }
+        $hr_time_arr = explode(':', $hr_time);
+        $hr_time_hr = (isset($hr_time_arr['0'])) ? $hr_time_arr['0'] : 0;
+        $hr_time_mnt = (isset($hr_time_arr['1'])) ? $hr_time_arr['1'] : 0;
+        $hr_time_sec = (isset($hr_time_arr['1'])) ? $hr_time_arr['1'] : 0;
+        $total_time_sec = ($hr_time_hr * 3600) + ($hr_time_mnt * 60) + ($hr_time_sec);
+        return $total_time_sec;
+    }
+
+}
+/* * ***************** Second to hour ******** ************ */
+
+if (!function_exists('sec_to_hr')) {
+
+    function sec_to_hr($sec_time, $format = 'H:i:s') {
+        if ($sec_time == '') {
+            return false;
+        }
+        $hr = floor($sec_time / 3600);
+        $mnt = floor(($sec_time % 3600) / 60);
+        $sec = ($sec_time % 3600) % 60;
+        if ($format == 'H:i:s') {
+            $total_hr = $hr . ':' . $mnt . ':' . $mnt;
+        } else if ($format == 'H:i') {
+            $total_hr = $hr . ':' . $mnt;
+        } else if ($format == 'i:s') {
+            $total_hr = $mnt . ':' . $sec;
+        } else if ($format == 'H:s') {
+            $total_hr = $hr . ':' . $sec;
+        } else if ($format == 'H') {
+            $total_hr = $hr;
+        } else if ($format == 's') {
+            $total_hr = $sec;
+        } else if ($format == 'i') {
+            $total_hr = $mnt;
+        } else {
+            $total_hr = $hr . ':' . $mnt . ':' . $sec;
+        }
+        return $total_hr;
+    }
+
+}
+
+
+
+
+
+/* * ***************** Day Name To week day no ******************** */
+if (!function_exists('dayname_to_weekdayno')) {
+
+    function dayname_to_weekdayno($data = 'Monday') {
+        $numDaysToMon = '';
+        switch ($data) {
+            case 'Monday': $numDaysToMon = 1;
+                break;
+            case 'Tuesday': $numDaysToMon = 2;
+                break;
+            case 'Wednesday': $numDaysToMon = 3;
+                break;
+            case 'Thursday': $numDaysToMon = 4;
+                break;
+            case 'Friday': $numDaysToMon = 5;
+                break;
+            case 'Saturday': $numDaysToMon = 6;
+                break;
+            case 'Sunday': $numDaysToMon = 7;
+                break;
+        }
+        return $numDaysToMon;
+    }
+
+}
+
+
+/* * ***************** week day no To Day Name ********  */
+if (!function_exists('weekdayno_to_dayname')) {
+
+    function weekdayno_to_dayname($data = '1') {
+        $numDaysToMon = '';
+        switch ($data) {
+            case '1': $numDaysToMon = 'Monday';
+                break;
+            case '2': $numDaysToMon = 'Tuesday';
+                break;
+            case '3': $numDaysToMon = 'Wednesday';
+                break;
+            case '4': $numDaysToMon = 'Thursday';
+                break;
+            case '5': $numDaysToMon = 'Friday';
+                break;
+            case '6': $numDaysToMon = 'Saturday';
+                break;
+            case '7': $numDaysToMon = 'Sunday';
+                break;
+        }
+        return $numDaysToMon;
+    }
+
+}
+
+/* * ********* Generates a Photo From Url Code **************** */
+if (!function_exists('get_image_from_url')) {
+
+    function get_image_from_url($link) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch, CURLOPT_URL, $link);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+
+}
+
+/* * ********* Get The Week Start date **************** */
+if (!function_exists('get_week_start_date')) {
+
+    function get_week_start_date($wk_num, $yr, $first = 0) {
+        $wk_ts = strtotime('+' . $wk_num . ' weeks', strtotime($yr . '0101'));
+        $mon_ts = strtotime('-' . date('w', $wk_ts) + $first . ' days', $wk_ts);
+        return $mon_ts;
+    }
+
+}
+
+if (!function_exists('get_last_week_time_array')) {
+
+    function get_last_week_time_array($weekCount = '52') {  // KD MAX 52 WEEK // max 52;
+        $past_year = date('Y', time()) - 1;
+        $year_weak = array();
+        for ($week_number = 0; $week_number < 56; $week_number++) {
+            $year_weak[] = $this->get_week_start_date($week_number, date('Y', time()) - 1);
+        }
+        for ($week_number = 0; $week_number < 56; $week_number++) {
+            $weektime = $this->get_week_start_date($week_number, date('Y', time()));
+            if ($weektime <= $this->utc_time) {
+                $year_weak[] = $weektime;
+            }
+        }
+        $year_weak = array_unique($year_weak, SORT_STRING);
+        asort($year_weak);
+        $k = array();
+        foreach ($year_weak as $key => $value) {
+            $k[] = $value;
+        }
+        for ($i = count($k); $i > count($k) - $weekCount; $i--) {
+            $j[] = $k[$i - 1];
+        }
+        return $j;
+    }
+
+}
+
+
+/* * ********* Get The last day Of Month  **************** **************** **************** */
+if (!function_exists('lastday_month')) {
+
+    function lastday_month($month = '', $year = '') {
+        if (empty($month)) {
+            $month = date('m');
+        }
+        if (empty($year)) {
+            $year = date('Y');
+        }
+        $result = strtotime("{$year}-{$month}-01");
+        $result = strtotime('-1 second', strtotime('+1 month', $result));
+        return $result;
+    }
+
+}
+
+
+if (!function_exists('get_last_month_time_array')) {
+
+    function get_last_month_time_array($total_month_point) {  // KD MAX 52 WEEK // max 52;
+        $k = 0;
+        $year = date('Y', $this->utc_time);
+        $current_month = date('m', $this->utc_time) + 1;
+        //  $total_month_point = 31;
+        $kd = 0;
+        $month_array = array();
+        for ($i = 0; $i < 3; $i++) {
+            if ($i == '0') {
+                for ($j = $current_month; $j > 0 && $kd < $total_month_point; $j--) {
+                    $kd = $kd + 1;
+                    $month_array[] = $this->lastday_month($j, $year);
+                }
+            } else {
+                for ($j = 12; $j > 0 && $kd < $total_month_point; $j--) {
+                    $kd = $kd + 1;
+                    $month_array[] = $this->lastday_month($j, $year);
+                }
+            }
+            $year = $year - 1;
+        }
+        return $month_array;
+    }
+
+}
+
+
+
+/* * ********* CUSTOM ERROR MESSAGES  **************** **************** **************** */
+
+if (!function_exists('code_to_message')) {
+
+    function code_to_message($code) {
+        switch ($code) {
+            case UPLOAD_ERR_INI_SIZE:
+                $message = "The uploaded file exceeds the upload_max_filesize directive in php.ini (Allow max file upload size :  " . ini_get('upload_max_filesize') . ")";
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+                $message = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $message = "The uploaded file was only partially uploaded";
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $message = "No file was uploaded";
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $message = "Missing a temporary folder";
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                $message = "Failed to write file to disk";
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $message = "File upload stopped by extension";
+                break;
+            default:
+                $message = "Unknown upload error";
+                break;
+        }
+        return $message;
+    }
+
+}
+
+// Function for generate random string for access token generate
+
+if (!function_exists('str_rand_access_token')) {
+
+    function str_rand_access_token($length = 32, $seeds = 'allalphanum') {
+        // Possible seeds
+        $seedings['alpha'] = 'abcdefghijklmnopqrstuvwqyz';
+        $seedings['numeric'] = '0123456789';
+        $seedings['alphanum'] = 'abcdefghijklmnopqrstuvwqyz0123456789';
+        $seedings['allalphanum'] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwqyz0123456789';
+        $seedings['upperalphanum'] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $seedings['alphanumspec'] = 'abcdefghijklmnopqrstuvwqyz0123456789!@#$%^*-_=+';
+        $seedings['alphacapitalnumspec'] = 'abcdefghijklmnopqrstuvwqyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@!*-_';
+        $seedings['hexidec'] = '0123456789abcdef';
+        $seedings['customupperalphanum'] = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; //Confusing chars like 0,O,1,I not included
+        // Choose seed
+        if (isset($seedings[$seeds])) {
+            $seeds = $seedings[$seeds];
+        }
+
+        // Seed generator
+        list($usec, $sec) = explode(' ', microtime());
+        $seed = (float) $sec + ((float) $usec * 100000);
+        mt_srand($seed);
+
+        // Generate
+        $str = '';
+        $seeds_count = strlen($seeds);
+
+        for ($i = 0; $length > $i; $i++) {
+            $str .= $seeds{mt_rand(0, $seeds_count - 1)};
+        }
+
+        return $str;
+    }
+
+}
+
+
+//Get file type
+
+if (!function_exists('get_file_type')) {
+
+    function get_file_type($ext) {
+        $filetType = 3; //File other than image and video
+        $imageExtensions = array('jpeg', 'JPEG', 'gif', 'GIF', 'png', 'PNG', 'jpg', 'JPG');
+        $videoExtensions = array('wmv', 'WMV', 'wav', 'WAV', 'm4r', 'M4R', 'mpeg', 'MPEG', 'mpg', 'MPG', 'mpe', 'MPE', 'mov', 'MOV', 'avi', 'AVI', 'mp4', 'MP4', 'm4v', 'M4V', '3gp', '3GP', 'flv', 'FLV', 'pem', 'PEM');
+        $audioExtensions = array('mp3', 'm4a', 'm4b', 'ra', 'ram', 'wav', 'ogg', 'oga', 'mid', 'midi', 'wma', 'wax', 'mka');
+        if (in_array($ext, $imageExtensions)) {
+            $filetType = 1; //Image file
+        } elseif (in_array($ext, $videoExtensions)) {
+            $filetType = 2; //Video file
+        } elseif (in_array($ext, $audioExtensions)) {
+            $filetType = 3; //Video file
+        }
+        return $filetType;
+    }
+
+}
+
+
+
+/**
+ * createArray($data) 
+ * 
+ * This is adds the contents of the return xml into the array for easier processing. 
+ * 
+ * @access    public 
+ * @param    string    $data this is the string of the xml data 
+ * @return    Array 
+ */
+if (!function_exists('create_array')) {
+
+    function create_array($xml) {
+        $values = array();
+        $index = array();
+        $array = array();
+        $parser = xml_parser_create();
+        xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
+        xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
+        xml_parse_into_struct($parser, $xml, $values, $index);
+        xml_parser_free($parser);
+        $i = 0;
+        $name = $values[$i]['tag'];
+        $array[$name] = isset($values[$i]['attributes']) ? $values[$i]['attributes'] : '';
+        $array[$name] = $this->_struct_to_array($values, $i);
+        return $array;
+    }
+
+}
+
+
+/** * ************ GET REQUEST WITH AJAX CALL OR NOT FROM DATABASE ******** */
+if (!function_exists('is_ajax')) {
+
+    function is_ajax() {
+        if ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+            return true;
+        return false;
+    }
+
+}
+
+
+if (!function_exists('get_data_by_curl_with_get_url')) {
+
+    function get_data_by_curl_with_get_url($url) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        return $output;
+    }
+
+}
+if (!function_exists('delete_image_in_folder')) {
+
+    function delete_image_in_folder($k_image, $path) {
+        if (file_exists($path)) {
+            @unlink($path . $k_image);
+        }
+        if (file_exists($path)) {
+            @unlink($path . IMG_THUMB_PRE . $k_image);
+        }
+    }
+
+}
+
+
+/* * ***************** DLETE IMAGES AND DIRECTORY ******** ********* */
+if (!function_exists('delete_folder')) {
+
+    function delete_folder($directory, $empty = false) {
+        if (substr($directory, -1) == "/") {
+            $directory = substr($directory, 0, -1);
+        }
+        if (!file_exists($directory) || !is_dir($directory)) {
+            return false;
+        } elseif (!is_readable($directory)) {
+            return false;
+        } else {
+            $directoryHandle = opendir($directory);
+            while ($contents = readdir($directoryHandle)) {
+                if ($contents != '.' && $contents != '..') {
+                    $path = $directory . "/" . $contents;
+                    if (is_dir($path)) {
+                        $this->deleteAll($path);
+                    } else {
+                        unlink($path);
+                    }
+                }
+            }
+            closedir($directoryHandle);
+            if ($empty == false) {
+                if (!rmdir($directory)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+}
+
+
+
+if (!function_exists('_px')) {
+
+    function _px($arr) {
+        echo "<pre>";
+        print_r($arr);
+        echo "</pre>";
+        exit;
+    }
+
+}
+
+if (!function_exists('_ex')) {
+
+    function _ex($string) {
+        echo $string;
+        exit;
+    }
+
+}
+
+if (!function_exists('random_color_class')) {
+
+    function random_color_class() {
+        $colorArray = array('dark', 'red', 'light-red', 'blue', 'light-blue', 'green', 'light-green',
+            'orange', 'light-orange', 'orange2', 'purple', 'pink', 'pink2', 'brown', 'grey', 'light-grey');
+        $value = array_rand($colorArray);
+        return " " . $colorArray[$value];
+    }
+
+}
+
+if (!function_exists('get_thumb_filename')) {
+
+    function get_thumb_filename($fileName) {
+        $ext = substr($fileName, strrpos($fileName, "."));
+        $name = substr($fileName, 0, strrpos($fileName, "."));
+        $thumbFile = $name . "_thumb" . $ext;
+        return $thumbFile;
+    }
+
+}
+
+if (!function_exists('calculate_age')) {
+
+    function calculate_age($dob) {
+        return date_diff(date_create($dob), date_create('today'))->y;
+    }
+
+}
+
+if (!function_exists('time_ago')) {
+
+    // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
+    function time_ago($time, $granularity = 2, $ago = true) {
+        $retval = '';
+        $difference = time() - $time;
+        $periods = array('decade' => 315360000,
+            'year' => 31536000,
+            'month' => 2628000,
+            'week' => 604800,
+            'day' => 86400,
+            'hour' => 3600,
+            'minute' => 60,
+            'second' => 1);
+
+        foreach ($periods as $key => $value) {
+            if ($difference >= $value) {
+                $time = floor($difference / $value);
+                $difference %= $value;
+                $retval .= ($retval ? ' ' : '') . $time . ' ';
+                $retval .= (($time > 1) ? $key . 's' : $key);
+                $granularity--;
+            }
+            if ($granularity == '0') {
+                break;
+            }
+        }
+        if ($ago)
+            return $retval . ' ago';
+        else
+            return $retval;
+    }
+
+}
+
+if (!function_exists('address_to_latlng')) {
+
+    function address_to_latlng($address = '', $city = '', $state = '', $country, $zip = '') {
+        $latlng = array(
+            'latitude' => '',
+            'longitude' => '',
+        );
+
+        //Calling goole api to get lat and lng
+        $googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+        if (!empty($address)) {
+            $googleUrl .= urlencode($address);
+        }
+
+        if (!empty($city)) {
+            $googleUrl .= urlencode($city);
+        }
+
+        if (!empty($state)) {
+            $googleUrl .= urlencode($state);
+        }
+
+        if (!empty($zip)) {
+            $googleUrl .= urlencode($zip);
+        }
+
+        if (!empty($country)) {
+            $googleUrl .= urlencode($country);
+        }
+
+        $json_content = file_get_contents($googleUrl);
+        $data = json_decode($json_content);
+        if ($data->status == 'OK') {
+            $latlng['latitude'] = $data->results[0]->geometry->location->lat;
+            $latlng['longitude'] = $data->results[0]->geometry->location->lng;
+        }
+
+        return $latlng;
+    }
+
+}
+
+if (!function_exists('get_name_title')) {
+
+    function get_name_title($titleId) {
+        return $titleId;
+        $title = '';
+        switch ($titleId) {
+            case 1:
+                $title = lang('USER_ADD_MR');
+                break;
+            case 2:
+                $title = lang('USER_ADD_MISS');
+                break;
+            case 3:
+                $title = lang('USER_ADD_MRS');
+                break;
+            case 4:
+                $title = lang('USER_ADD_DR');
+                break;
+        }
+        return $title;
+    }
+
+}
+
+if (!function_exists('send_text_message')) {
+
+    function send_text_message($mobileNo, $message) {
+        $user = SMS_USER_NAME;
+        $password = SMS_PASSWORD;
+        $api_id = SMS_API_ID;
+        $baseurl = SMS_BASE_URL;
+
+        $text = urlencode($message);
+        $to = $mobileNo;
+
+        // auth call
+        $url = "$baseurl/http/auth?user=$user&password=$password&api_id=$api_id";
+
+        // do auth call
+        $ret = file($url);
+
+        // explode our response. return string is on first line of the data returned
+        $sess = explode(":", $ret[0]);
+
+        if ($sess[0] == "OK") {
+
+            $sess_id = trim($sess[1]); // remove any whitespace
+            $url = "$baseurl/http/sendmsg?session_id=$sess_id&to=$to&text=$text";
+
+            // do sendmsg call
+            $ret = file($url);
+            $send = explode(":", $ret[0]);
+
+            if ($send[0] == "ID") {
+                return $send[1];
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+}
+
+
+if (!function_exists('seconds2human')) {
+
+    function seconds2human($ss) {
+        $M = floor($ss / 2592000);
+        $w = floor($ss / 604800);
+        $d = floor(($ss % 2592000) / 86400);
+        $h = floor(($ss % 86400) / 3600);
+        $m = floor(($ss % 3600) / 60);
+        $s = $ss % 60;
+
+        //if ($M > 0)
+        //    return $M." month".(($M > 1) ? 's' : '');
+        //else if ($w > 0)
+        //    return $w." week".(($w > 1) ? 's' : '');
+        //else if ($d > 0)
+        //    return $d." day".(($d > 1) ? 's' : '');
+        //else if ($h > 0)
+        //    return $h." hour".(($h > 1) ? 's' : '');
+        //else if ($m > 0)
+        //    return $m." minute".(($m > 1) ? 's' : '');
+        //else if ($s > 0)
+        //    return $s." second".(($s > 1) ? 's' : '');
+        //else
+        //    return "0"." minutes";
+
+        if ($M > 0)
+            return $M . " " . lang('SM_MONTHS');
+        else if ($w > 0)
+            return $w . " " . lang('SM_WEEKS');
+        else if ($d > 0)
+            return $d . " " . lang('SM_DAYS');
+        else if ($h > 0)
+            return $h . " " . lang('SM_HOURS');
+        else if ($m > 0)
+            return $m . " " . lang('SM_MINUTES');
+        else if ($s > 0)
+            return $s . " " . lang('SM_SECONDS');
+        else
+            return "0" . " " . lang('SM_MINUTES');
+    }
+
+}
+
+if (!function_exists('idFromUnit')) {
+
+    function idFromUnit($unit) {
+        $id = 0;
+        switch (strtolower($unit)) {
+            case 'hour':
+            case 'hours':
+                $id = 1;
+                break;
+            case 'day':
+            case 'days':
+                $id = 2;
+                break;
+            case 'week':
+            case 'weeks':
+                $id = 3;
+                break;
+            case 'month':
+            case 'months':
+                $id = 4;
+                break;
+        }
+        return $id;
+    }
+
+}
+
+if (!function_exists('calculateAge')) {
+
+    function calculateAge($date) {
+        $age = 0;
+
+        $birthDate = explode('-', $date);
+
+        $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[1], $birthDate[2], $birthDate[0]))) > date("md") ? ((date("Y") - $birthDate[0]) - 1) : (date("Y") - $birthDate[0]));
+        return $age;
+    }
+
+}
+
+if (!function_exists('current_time')) {
+
+    function current_time($format = 'Y-m-d H:i:s') {
+        return date($format);
+    }
+
+}
+
+//code for photo upload
+
+if (!function_exists('do_upload')) {
+
+    function do_upload($upload_path, $file, $is_thumb = true) {
+
+        $CI = & get_instance();
+        reset($file);
+        $file_object = key($file);
+
+        $return_file_names = "";
+        $file_names_array = array();
+        $is_single = '';
+        //if single file is selected
+        if (!is_array($file[$file_object]['name'])) {
+
+            $is_single = true;
+
+            $file_index = 0;
+            $_FILES[$file_object . $file_index]['name'] = $file[$file_object]['name'];
+            $_FILES[$file_object . $file_index]['size'] = $file[$file_object]['size'];
+            $_FILES[$file_object . $file_index]['type'] = $file[$file_object]['type'];
+            $_FILES[$file_object . $file_index]['tmp_name'] = $file[$file_object]['tmp_name'];
+            $_FILES[$file_object . $file_index]['error'] = $file[$file_object]['error'];
+
+            if ($_FILES[$file_object . $file_index]['error'] != 0) {
+                unset($_FILES[$file_object . $file_index]);
+            }
+            unset($_FILES[$file_object]);
+        } else {
+            $is_single = false;
+            $totalfiles = count($file[$file_object]['name']);
+            for ($file_index = 0; $file_index < $totalfiles; $file_index++) {
+                $_FILES[$file_object . $file_index]['name'] = $file[$file_object]['name'][$file_index];
+                $_FILES[$file_object . $file_index]['size'] = $file[$file_object]['size'][$file_index];
+                $_FILES[$file_object . $file_index]['type'] = $file[$file_object]['type'][$file_index];
+                $_FILES[$file_object . $file_index]['tmp_name'] = $file[$file_object]['tmp_name'][$file_index];
+                $_FILES[$file_object . $file_index]['error'] = $file[$file_object]['error'][$file_index];
+
+                if ($_FILES[$file_object . $file_index]['error'] != 0) {
+                    unset($_FILES[$file_object . $file_index]);
+                }
+            }
+        }
+
+        if (!isset($totalfiles)) {
+            $totalfiles = 1;
+        }
+
+        //check upload path folder exist or not?
+        $CI->load->library('upload');
+        $CI->load->library('image_lib');
+
+        for ($file_index = 0; $file_index < $totalfiles; $file_index++) {
+            if (is_array($upload_path)) {
+                $config['upload_path'] = $upload_path[$file_index];
+                if (!file_exists($upload_path[$file_index])) {
+                    mkdir($upload_path[$file_index], 0777, true);
+                    chmod($upload_path[$file_index], 0777);
+                }
+                $file_name = basename($upload_path[$file_index]);
+            } else {
+
+                $config['upload_path'] = $upload_path;
+                if (!file_exists($upload_path)) {
+                    mkdir($upload_path, 0777, true);
+                    chmod($upload_path, 0777);
+                }
+                $file_name = basename($upload_path);
+            }
+
+            $config['allowed_types'] = "*";
+            $config['overwrite'] = FALSE;
+            $config['file_name'] = $file_name . "_" . uniqid();
+            $CI->upload->initialize($config);
+            if ($CI->upload->do_upload($file_object . $file_index)) {
+                $upload_array = array();
+                $upload_array = $CI->upload->data();
+                $return_file_names = $upload_array['file_name'];
+            } else {
+
+                _px($CI->upload->display_errors());
+                exit;
+                return FALSE;
+            }
+        }
+        if ($is_single) {
+            return $return_file_names;
+        } else {
+            return $file_names_array;
+        }
+    }
+
+    if (!function_exists('get_photo_url')) {
+
+        /**
+         * Description : This function is used to send the image url
+         * @param type $folder_name
+         * @param type $id
+         * @param type $image_name
+         * @return string
+         */
+        function get_photo_url($folder_name, $id, $image_name) {
+
+            $photo_url = '';
+            if (!empty($id) && !empty($image_name)) {
+                $photo_url = UPLOAD_ABS_PATH . $folder_name . '/' . $id . '/' . $image_name;
+                list($height, $width) = getimagesize($photo_url);
+                if (empty($height) || empty($width)) {
+                    $photo_url = '';
+                }
+            } else {
+                $photo_url = '';
+            }
+            return $photo_url;
+        }
+
+    }
+
+    if (!function_exists('get_thumb_photo_url')) {
+
+        /**
+         * Description : This function is used to send the thumb image url
+         * @param type $folder_name
+         * @param type $id
+         * @param type $image_name
+         * @return string
+         */
+        function get_thumb_photo_url($folder_name, $id, $image_name) {
+
+            $photo_url = '';
+            if (!empty($id) && !empty($image_name)) {
+                $photo_url = UPLOAD_ABS_PATH . $folder_name . '/' . $id . '/thumb/' . $image_name;
+                list($height, $width) = getimagesize($photo_url);
+                if (empty($height) || empty($width)) {
+                    $photo_url = '';
+                }
+            } else {
+                $photo_url = '';
+            }
+            return $photo_url;
+        }
+
+    }
+    if (!function_exists('get_session_language')) {
+
+        function get_session_language() {
+            $CI = &get_instance();
+            return empty($CI->session->userdata('language')) ? 'english' : $CI->session->userdata('language');
+        }
+
+    }
+
+    if (!function_exists('get_all_languages')) {
+
+        function get_all_languages() {
+            $languageArr = array(
+                'english' => 'ltr',
+                'arabic' => 'rtl',
+            );
+            return $languageArr;
+        }
+
+    }
+}
+
+
+if (!function_exists('send_notification_android')) {
+
+    function send_notification_android($registration_ids, $message, $fcm_key = ANDROID_FCM_KEY) {
+        $url = 'https://fcm.googleapis.com/fcm/send';
+
+        $headers = array(
+            'Authorization: key=' . $fcm_key,
+            'Content-Type: application/json'
+        );
+
+        $fields = array(
+            'registration_ids' => $registration_ids,
+            'notification' => array(
+                'body' => (string) $message,
+                'title' => (string) $message,
+                'icon' => 'appicon',
+            ),
+            'data' => array(
+                'name' => (string) $message,
+                'vibrate' => true,
+                'badge' => 1,
+                'sound' => "default",
+            )
+        );
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        $resultArr = json_decode($result, true);
+        $failureTokens = array();
+
+        foreach ($resultArr['results'] as $key => $result) {
+            if (isset($result['error']) && $result['error'] == 'InvalidRegistration') {
+                $failureTokens[] = $registration_ids[$key];
+            } else {
+                $successTokens[] = $registration_ids[$key];
+            }
+        }
+        $notification_result = array();
+        $notification_result['failure'] = $failureTokens;
+        $notification_result['success'] = $successTokens;
+        if ($resultArr['success'] == 1) {
+            return $notification_result;
+        }
+        return false;
+    }
+
+}
+
+if (!function_exists("send_notification_ios")) {
+
+    function send_notification_ios($user_device_token, $message, $pem_file_path = IOS_PEM_PATH, $app_is_live = APP_IS_LIVE) {
+
+        $log = CRON_DOCROOT . "application/admin/controllers/push_log.txt";
+        file_put_contents($log, "\n from ios send function =" . $message, FILE_APPEND | LOCK_EX);
+
+        //Setup notification message
+        $body = array();
+        $body['aps']['alert'] = $message;
+        $body['aps']['sound'] = 'default';
+        $body['aps']['badge'] = 1;
+        $body['aps']['icon'] = 'appicon';
+        $body['aps']['vibrate'] = 'true';
+        $body['aps']['notification_id'] = (string) 1;
+
+        //Setup stream (connect to Apple Push Server)
+        $ctx = stream_context_create();
+        stream_context_set_option($ctx, 'ssl', 'local_cert', $pem_file_path);
+        if ($app_is_live == 'true') {
+            $fp = stream_socket_client('ssl://gateway.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT, $ctx);
+        } else {
+            $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT, $ctx);
+        }
+        stream_set_blocking($fp, 0);
+        $log = CRON_DOCROOT . "application/admin/controllers/push_log.txt";
+        file_put_contents($log, "\nconnection info =" .$fp, FILE_APPEND | LOCK_EX);
+
+        if (!$fp) {
+            file_put_contents($log, "\n Not Connected", FILE_APPEND | LOCK_EX);
+            return TRUE;
+            
+        } else {
+            $apple_expiry = time() + (90 * 24 * 60 * 60); //Keep push alive (waiting for delivery) for 90 days
+            $device_token = '';
+            $ci = &get_instance();
+            $failureTokens = array();
+            $successTokens = array();
+            $payload = json_encode($body);
+            foreach ($user_device_token as $key => $value) {
+                $apple_identifier = $key;
+                $device_token = $value;
+                // check that current token is exist in bad token table or not.
+                // if not exist then send push notification.
+
+                $msg = pack("C", 1) . pack("N", $apple_identifier) . pack("N", $apple_expiry) . pack("n", 32) . pack('H*', str_replace(' ', '', $device_token)) . pack("n", strlen($payload)) . $payload;
+                if (flock($fp, LOCK_EX)) {
+                    fwrite($fp, $msg);
+                    fflush($fp);
+                    flock($fp, LOCK_UN);
+                }
+                else
+                {
+                    file_put_contents($log, "\n not get lock", FILE_APPEND | LOCK_EX);
+                }
+                
+                $error_response = checkAppleErrorResponse($fp);
+                if ($error_response['status_code'] == '0') {
+                    $successTokens[] = $device_token;
+                } else {
+                    $failureTokens[] = $device_token;
+                }
+            }
+            fclose($fp);
+        }
+        $notification_result = array();
+        $notification_result['failure'] = $failureTokens;
+        $notification_result['success'] = $successTokens;
+        return $notification_result;
+    }
+
+}
+
+if (!function_exists('checkAppleErrorResponse')) {
+
+    function checkAppleErrorResponse($fp) {
+        $log = CRON_DOCROOT . "application/admin/controllers/errorlist.txt";
+        file_put_contents($log, "\n error_list called ", FILE_APPEND | LOCK_EX);
+        //byte1=always 8, byte2=StatusCode, bytes3,4,5,6=identifier(rowID). Should return nothing if OK.
+        $apple_error_response = fread($fp, 6);
+        file_put_contents($log, "\n error oobject = " . json_encode($apple_error_response), FILE_APPEND | LOCK_EX);
+        //NOTE: Make sure you set stream_set_blocking($fp, 0) or else fread will pause your script and wait forever when there is no response to be sent.
+        if ($apple_error_response) {
+            //unpack the error response (first byte 'command" should always be 8)
+            $error_response = unpack('Ccommand/Cstatus_code/Nidentifier', $apple_error_response);
+            file_put_contents($log, "\n error oobject = " . json_encode($error_response), FILE_APPEND | LOCK_EX);
+//            if ($error_response['status_code'] == '0') {
+//                $error_response['status_code'] = '0-No errors encountered';
+//            } else if ($error_response['status_code'] == '1') {
+//                $error_response['status_code'] = '1-Processing error';
+//            } else if ($error_response['status_code'] == '2') {
+//                $error_response['status_code'] = '2-Missing device token';
+//            } else if ($error_response['status_code'] == '3') {
+//                $error_response['status_code'] = '3-Missing topic';
+//            } else if ($error_response['status_code'] == '4') {
+//                $error_response['status_code'] = '4-Missing payload';
+//            } else if ($error_response['status_code'] == '5') {
+//                $error_response['status_code'] = '5-Invalid token size';
+//            } else if ($error_response['status_code'] == '6') {
+//                $error_response['status_code'] = '6-Invalid topic size';
+//            } else if ($error_response['status_code'] == '7') {
+//                $error_response['status_code'] = '7-Invalid payload size';
+//            } else if ($error_response['status_code'] == '8') {
+//                $error_response['status_code'] = '8-Invalid token';
+//            } else if ($error_response['status_code'] == '255') {
+//                $error_response['status_code'] = '255-None (unknown)';
+//            } else {
+//                $error_response['status_code'] = $error_response['status_code'] . '-Not listed';
+//            }
+//            echo '<br><b>+ + + + + + ERROR</b> Response Command:<b>' . $error_response['command'] . '</b>&nbsp;&nbsp;&nbsp;Identifier:<b>' . $error_response['identifier'] . '</b>&nbsp;&nbsp;&nbsp;Status:<b>' . $error_response['status_code'] . '</b><br>';
+//            echo 'Identifier is the rowID (index) in the database that caused the problem, and Apple will disconnect you from server. To continue sending Push Notifications, just start at the next rowID after this Identifier.<br>';
+
+            return $error_response;
+        }
+        return true;
+    }
+
+}
+
+
+?>
