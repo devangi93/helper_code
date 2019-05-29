@@ -1,0 +1,2 @@
+//Find distance in miles
+round(69.0 *DEGREES(ACOS(COS(RADIANS(".$city_latitude.")) * COS(RADIANS(rl.vLatitude)) * COS(RADIANS(".$city_longitude.") - RADIANS(rl.vLongitude)) +SIN(RADIANS(".$city_latitude.")) * SIN(RADIANS(rl.vLatitude)))),1)
